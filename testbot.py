@@ -70,7 +70,19 @@ def coin_handler(message):
     bot.reply_to(message, coin)
 
 @bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    bot.reply_to(message, message.text) 
+def check_message_for_links(message):
+    if "https://" in message.text or "http://" in message.text:
+        user_id = message.from_user.id
+        username = message.from_user.username
+        first_name = message.from_user.first_name
+        last_name = message.from_user.last_name
+        message_text = message.text
+        try:
+            bot.ban_chat_member(message.chat.id, user_id)
+            bot.delete_message(message.chat.id, message.message_id)
+            bot.send_message(message.chat.id, f"Пользователь @{username} забанен за отправку ссылок.")
+        except Exception as e:
+            print(f"Ошибка бана пользователя: {e}")
+        
 
 bot.infinity_polling()
